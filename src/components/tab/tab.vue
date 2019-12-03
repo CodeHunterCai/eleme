@@ -21,7 +21,7 @@
               @scroll="onScroll"
       >
         <cube-slide-item v-for="(tab,index) in tabs" :key="index">
-          <component :is="tab.component" :data="tab.data"></component>
+          <component :is="tab.component" :data="tab.data" ref="component"></component>
         </cube-slide-item>
       </cube-slide>
     </div>
@@ -29,10 +29,6 @@
 </template>
 
 <script>
-import Goods from 'components/goods/goods'
-import Ratings from 'components/ratings/ratings'
-import Seller from 'components/seller/seller'
-
 export default {
   name: 'tab',
   props: {
@@ -41,11 +37,15 @@ export default {
       default () {
         return []
       }
+    },
+    initialIndex: {
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
-      index: 0,
+      index: this.initialIndex,
       slideOptions: {
         listenScroll: true,
         probeType: 3,
@@ -65,9 +65,14 @@ export default {
       }
     }
   },
+  mounted () {
+    this.onChange(this.index)
+  },
   methods: {
     onChange (currentIndex) {
       this.index = currentIndex
+      const component = this.$refs.component[currentIndex]
+      component.fetch && component.fetch()
     },
     onScroll (pos) {
       const tabBarWidth = this.$refs.tabBar.$el.clientWidth
@@ -75,11 +80,6 @@ export default {
       const transform = -pos.x / slideWidth * tabBarWidth
       this.$refs.tabBar.setSliderTransform(transform)
     }
-  },
-  components: {
-    Goods,
-    Ratings,
-    Seller
   }
 }
 </script>
