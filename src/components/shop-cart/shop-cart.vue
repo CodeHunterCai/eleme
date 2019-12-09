@@ -7,7 +7,9 @@
             <div class="logo" :class="{'highlight':totalCount>0}">
               <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
             </div>
-            <div class="num" v-show="totalCount>0"></div>
+            <div class="num" v-show="totalCount>0">
+              <bubble :num="totalCount"></bubble>
+            </div>
           </div>
           <div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
           <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
@@ -18,11 +20,39 @@
           </div>
         </div>
       </div>
+      <div class="ball-container">
+        <div v-for="(ball,index) in balls" :key="index">
+          <transition
+                  @before-enter="beforeDrop"
+                  @enter="dropping"
+                  @after-enter="afterDrop"
+          >
+            <div class="ball" v-show="ball.show">
+              <div class="inner inner-hook"></div>
+            </div>
+          </transition>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Bubble from 'components/bubble/bubble'
+
+const BALL_LEN = 10
+const innerClsHook = 'inner-hook'
+
+function createBalls () {
+  let ret = []
+  for (let i = 0; i < BALL_LEN; i++) {
+    ret.push({
+      show: false
+    })
+  }
+  return ret
+}
+
 export default {
   name: 'shop-cart',
   props: {
@@ -39,6 +69,11 @@ export default {
     minPrice: {
       type: Number,
       default: 0
+    }
+  },
+  data () {
+    return {
+      balls: createBalls()
     }
   },
   computed: {
@@ -73,6 +108,41 @@ export default {
         return 'enough'
       }
     }
+  },
+  created () {
+    this.dropBalls = []
+  },
+  methods: {
+    drop (el) {
+      for (let i = 0; i < this.balls.length; i++) {
+        const ball = this.balls[i]
+        if (!ball.show) {
+          ball.show = true
+          ball.el = el
+          this.dropBalls.push(ball)
+          return
+        }
+      }
+    },
+    beforeDrop (el) {
+      const ball = this.dropBalls[this.dropBalls.length - 1]
+      const rect = ball.el.getBoundingClientRect()
+      const x = rect.left - 32
+      const y = -(window.innerHeight - rect.top - 22)
+      el.style.display = ''
+      el.transform = el.webkitTransform = `translate3d(0,${y}px,0)`
+      const inner = el.getElementsByClassName(innerClsHook)[0]
+      inner.transform = inner.webkitTransform = `translate3d(${x}px,0,0)`
+    },
+    dropping (el, down) {
+
+    },
+    afterDrop (el) {
+
+    }
+  },
+  components: {
+    Bubble
   }
 }
 </script>
