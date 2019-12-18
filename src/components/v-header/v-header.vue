@@ -33,32 +33,32 @@
 </template>
 
 <script type="text/ecmascript-6">
-import SupportIco from 'components/support-ico/support-ico'
+  import SupportIco from 'components/support-ico/support-ico'
 
-export default {
-  name: 'v-header',
-  props: {
-    seller: {
-      type: Object,
-      default () {
-        return {}
-      }
-    }
-  },
-  methods: {
-    showDetail () {
-      this.headerDetailComp = this.headerDetailComp || this.$createHeaderDetail({
-        $props: {
-          seller: 'seller'
+  export default {
+    name: 'v-header',
+    props: {
+      seller: {
+        type: Object,
+        default() {
+          return {}
         }
-      })
-      this.headerDetailComp.show()
+      }
+    },
+    methods: {
+      showDetail() {
+        this.headerDetailComp = this.headerDetailComp || this.$createHeaderDetail({
+          $props: {
+            seller: 'seller'
+          }
+        })
+        this.headerDetailComp.show()
+      }
+    },
+    components: {
+      SupportIco
     }
-  },
-  components: {
-    SupportIco
   }
-}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -70,53 +70,42 @@ export default {
     overflow: hidden
     color: $color-white
     background: $color-background-ss
-
     .content-wrapper
       position: relative
       display: flex
       align-items: center
       padding: 24px 12px 18px 24px
-
       .avatar
         flex: 0 0 64px
         width: 64px
         margin-right: 16px
-
         img
           border-radius: 2px
-
       .content
         flex: 1
-
         .title
           display: flex
           align-items: center
           margin-bottom: 8px
-
           .brand
             width: 30px
             height: 18px
             bg-image('brand')
             background-size: 30px 18px
             background-repeat: no-repeat
-
           .name
             margin-left: 6px
             font-size: $fontsize-large
             font-weight: bold
-
         .description
           margin-bottom: 8px
           line-height: 12px
           font-size: $fontsize-small
-
         .support
           display: flex
           align-items: center
-
           .support-ico
             margin-right: 4px
-
           .text
             line-height: 12px
             font-size: $fontsize-small-s
@@ -133,10 +122,8 @@ export default {
         text-align: center
         border-radius: 14px
         background: $color-background-sss
-
         .count
           font-size: $fontsize-small-s
-
         .icon-keyboard_arrow_right
           margin-left: 2px
           line-height: 24px
@@ -150,7 +137,6 @@ export default {
       line-height: 28px
       padding: 0 8px
       background: $color-background-sss
-
       .bulletin-title
         flex: 0 0 22px
         width: 22px
@@ -159,19 +145,16 @@ export default {
         bg-image('bulletin')
         background-size: 22px 12px
         background-repeat: no-repeat
-
       .bulletin-text
         flex: 1
         white-space: nowrap
         overflow: hidden
         text-overflow: ellipsis
         font-size: $fontsize-small-s
-
       .icon-keyboard_arrow_right
         flex: 0 0 10px
         width: 10px
         font-size: $fontsize-small-s
-
     .background
       position: absolute
       top: 0

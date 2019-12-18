@@ -11,31 +11,31 @@
 </template>
 
 <script>
-const EVENT_ADD = 'add'
+  const EVENT_ADD = 'add'
 
-export default {
-  name: 'cart-control',
-  props: {
-    food: {
-      type: Object
-    }
-  },
-  methods: {
-    add (event) {
-      if (!this.food.count) {
-        this.$set(this.food, 'count', 1)
-      } else {
-        this.food.count++
+  export default {
+    name: 'cart-control',
+    props: {
+      food: {
+        type: Object
       }
-      this.$emit(EVENT_ADD, event.target)
     },
-    decrease () {
-      if (this.food.count) {
-        this.food.count--
+    methods: {
+      add(event) {
+        if (!this.food.count) {
+          this.$set(this.food, 'count', 1)
+        } else {
+          this.food.count++
+        }
+        this.$emit(EVENT_ADD, event.target)
+      },
+      decrease() {
+        if (this.food.count) {
+          this.food.count--
+        }
       }
     }
   }
-}
 </script>
 
 <style lang="stylus" scoped>
@@ -44,12 +44,10 @@ export default {
   .cartcontrol
     display: flex
     align-items: center
-
     .cart-decrease
       display: inline-block
       padding: 6px
       opacity: 1
-
       .inner
         display: inline-block
         line-height: 24px
@@ -57,24 +55,19 @@ export default {
         color: $color-blue
         transition: all 0.4s linear
         transform: rotate(0)
-
       &.move-enter-active, &.move-leave-active
         transition: all 0.4s linear
-
       &.move-enter, &.move-leave-active
         opacity: 0
         transform: translate3d(24px, 0, 0)
-
         .inner
           transform: rotate(180deg)
-
     .cart-count
       width: 12px
       line-height: 24px
       text-align: center
       font-size: $fontsize-small-s
       color: $color-grey
-
     .cart-add
       display: inline-block
       padding: 6px
