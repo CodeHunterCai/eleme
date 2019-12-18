@@ -154,7 +154,7 @@ export default {
         $props: {
           food: 'selectedFood'
         },
-        $event: {
+        $events: {
           leave: () => {
             this._hideShopCartList()
           },
