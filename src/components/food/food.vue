@@ -1,7 +1,7 @@
 <template>
   <transition
-          name="move"
-          @after-leave="afterLeave"
+    name="move"
+    @after-leave="afterLeave"
   >
     <div class="food" v-show="visible">
       <cube-scroll ref="scroll">
@@ -36,6 +36,36 @@
             <p class="text">{{food.info}}</p>
           </div>
           <split></split>
+          <div class="rating">
+            <h1 class="title">商品评价</h1>
+            <rating-select
+              @select="onSelect"
+              @toggle="onToggle"
+              :selectType="selectType"
+              :onlyContent="onlyContent"
+              :desc="desc"
+              :ratings="ratings">
+            </rating-select>
+            <div class="rating-wrapper">
+              <ul v-show="computedRatings && computedRatings.length">
+                <li
+                  v-for="(rating,index) in computedRatings"
+                  class="rating-item border-bottom-1px"
+                  :key="index"
+                >
+                  <div class="user">
+                    <span class="name">{{rating.username}}</span>
+                    <img class="avatar" width="12" height="12" :src="rating.avatar">
+                  </div>
+                  <div class="time">{{format(rating.rateTime)}}</div>
+                  <p class="text">
+                    <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
+                  </p>
+                </li>
+              </ul>
+              <div class="no-rating" v-show="!computedRatings || !computedRatings.length">暂无评价</div>
+            </div>
+          </div>
         </div>
       </cube-scroll>
     </div>
@@ -43,56 +73,67 @@
 </template>
 
 <script type="text/ecmascript-6">
-import CartControl from 'components/cart-control/cart-control'
-import Split from 'components/split/split'
-import ratingMixin from 'common/mixins/rating'
-import popupMixin from 'common/mixins/popup'
+  import moment from 'moment'
+  import CartControl from 'components/cart-control/cart-control'
+  import RatingSelect from 'components/rating-select/rating-select'
+  import Split from 'components/split/split'
+  import ratingMixin from 'common/mixins/rating'
+  import popupMixin from 'common/mixins/popup'
 
-const EVENT_SHOW = 'show'
-const EVENT_ADD = 'add'
-const EVENT_LEAVE = 'leave'
+  const EVENT_SHOW = 'show'
+  const EVENT_ADD = 'add'
+  const EVENT_LEAVE = 'leave'
 
-export default {
-  name: 'food',
-  mixins: [ratingMixin, popupMixin],
-  props: {
-    food: {
-      type: Object
-    }
-  },
-  data () {
-    return {
-      desc: {
-        all: '全部',
-        positive: '推荐',
-        negative: '吐槽'
+  export default {
+    name: 'food',
+    mixins: [ratingMixin, popupMixin],
+    props: {
+      food: {
+        type: Object
       }
-    }
-  },
-  created () {
-    this.$on(EVENT_SHOW, () => {
-      this.$nextTick(() => {
-        this.$refs.scroll.refresh()
+    },
+    data() {
+      return {
+        desc: {
+          all: '全部',
+          positive: '推荐',
+          negative: '吐槽'
+        }
+      }
+    },
+    computed: {
+      ratings() {
+        return this.food.ratings
+      }
+    },
+    created() {
+      this.$on(EVENT_SHOW, () => {
+        this.$nextTick(() => {
+          this.$refs.scroll.refresh()
+        })
       })
-    })
-  },
-  methods: {
-    afterLeave () {
-      this.$emit(EVENT_LEAVE)
     },
-    addFirst (event) {
-      this.$set(this.food, 'count', 1)
-      this.$emit(EVENT_ADD, event.target)
+    methods: {
+      afterLeave() {
+        this.$emit(EVENT_LEAVE)
+      },
+      addFirst(event) {
+        this.$set(this.food, 'count', 1)
+        this.$emit(EVENT_ADD, event.target)
+      },
+      addFood(target) {
+        this.$emit(EVENT_ADD, target)
+      },
+      format(time) {
+        return moment(time).format('YYYY-MM-DD hh:mm')
+      }
     },
-    addFood (target) {
-      this.$emit(EVENT_ADD, target)
+    components: {
+      CartControl,
+      RatingSelect,
+      Split
     }
-  },
-  components: {
-    CartControl,
-    Split
   }
-}
 </script>
 
 <style lang="stylus" scoped>
@@ -107,31 +148,25 @@ export default {
     z-index: 30
     width: 100%
     background: $color-white
-
     &.move-enter-active, &.move-leave-active
       transition: all 0.3s linear
-
     &.move-enter, &.move-leave-active
       transform: translate3d(100%, 0, 0)
-
     .image-header
       position: relative
       width: 100%
       height: 0
       padding-top: 100%
-
       img
         position: absolute
         top: 0
         left: 0
         width: 100%
         height: 100%
-
       .back
         position: absolute
         top: 10px
         left: 0
-
         .icon-arrow_lift
           display: block
           padding: 10px
@@ -141,45 +176,36 @@ export default {
     .content
       position: relative
       padding: 18px
-
       .title
         line-height: 14px
         margin-bottom: 8px
         font-size: $fontsize-medium
         font-weight: 700
         color: $color-dark-grey
-
       .detail
         margin-bottom: 18px
         line-height: 10px
         height: 10px
-
         .sell-count, .rating
           font-size: $fontsize-small-s
           color: $color-light-grey
-
         .sell-count
           margin-right: 12px
-
       .price
         line-height: 24px
         font-weight: 700
-
         .now
           margin-right: 8px
           font-size: 14px
           color: $color-red
-
         .old
           text-decoration: line-through
           font-size: $fontsize-small-s
           color: $color-light-grey
-
       .cart-control-wrapper
         position: absolute
         right: 12px
         bottom: 12px
-
       .buy
         position: absolute
         right: 18px
@@ -194,48 +220,37 @@ export default {
         color: $color-white
         background: $color-blue
         opacity: 1
-
         &.fade-enter-active, &.fade-leave-active
           transition: all 0.3s
-
         &.fade-enter, &.fade-leave-active
           opacity: 0
           z-index: -1
-
     .info
       padding: 18px
-
       .title
         line-height: 14px
         margin-bottom: 6px
         font-size: $fontsize-medium
         color: $color-dark-grey
-
       .text
         line-height: 24px
         padding: 0 8px
         font-size: $fontsize-small
         color: $color-grey
-
     .rating
       padding-top: 18px
-
       .title
         line-height: 14px
         margin-left: 18px
         font-size: $fontsize-medium
         color: $color-dark-grey
-
       .rating-wrapper
         padding: 0 18px
-
         .rating-item
           position: relative
           padding: 16px 0
-
           &:last-child
             border-none()
-
           .user
             position: absolute
             right: 0
@@ -243,34 +258,27 @@ export default {
             display: flex
             align-items: center
             line-height: 12px
-
             .name
               margin-right: 6px
               font-size: $fontsize-small-s
               color: $color-light-grey
-
             .avatar
               border-radius: 50%
-
           .time
             margin-bottom: 6px
             line-height: 12px
             font-size: $fontsize-small-s
             color: $color-light-grey
-
           .text
             line-height: 16px
             font-size: $fontsize-small
             color: $color-dark-grey
-
             .icon-thumb_up, .icon-thumb_down
               margin-right: 4px
               line-height: 16px
               font-size: $fontsize-small
-
             .icon-thumb_up
               color: $color-blue
-
             .icon-thumb_down
               color: $color-light-grey
 
